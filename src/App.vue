@@ -3,6 +3,7 @@ import { reactive, computed } from 'vue'
 import { products } from './products.js'
 
 const cart = reactive([])
+
 const addItem = (product) => {
   const exists = cart.some((item) => item.product.id === product.id)
   if (exists) {
@@ -30,6 +31,7 @@ const removeItem = (product) => {
     }
   }
 }
+
 const subTotal = computed(() => {
   return parseFloat(
     cart.reduce((total, item) => {
@@ -37,6 +39,7 @@ const subTotal = computed(() => {
     }, 0)
   )
 })
+
 const pricePerProduct = computed(() => {
   return (product) => {
     const cartItem = cart.find((item) => item.product.id === product.id)
@@ -47,6 +50,7 @@ const pricePerProduct = computed(() => {
     }
   }
 })
+
 const getProductTotalWeight = computed(() => {
   return (product) => {
     const cartItem = cart.find((item) => item.product.id === product.id)
@@ -65,6 +69,9 @@ const shipping = computed(() => {
   const subtotal = subTotal.value
   const totalWeight = cart.reduce((total, item) => total + item.weight, 0)
 
+  if (cart.length === 0) {
+    return 0
+  }
   if (subtotal > 400) {
     return 0
   } else {
