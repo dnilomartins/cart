@@ -7,11 +7,11 @@ const addItem = (product) => {
   const exists = cart.some((item) => item.product.id === product.id)
   if (exists) {
     const existingItem = cart.find((item) => item.product.id === product.id)
-    existingItem.weight = (parseFloat(existingItem.weight) + product.weight).toFixed(2)
+    existingItem.weight = existingItem.weight + product.weight
   } else {
     cart.push({
       product: { ...product },
-      weight: product.weight.toFixed(2)
+      weight: product.weight
     })
   }
 }
@@ -23,22 +23,25 @@ const removeItem = (product) => {
     if (item.weight < product.weight) {
       cart.splice(existsIndex, 1)
     } else {
-      item.weight = (parseFloat(item.weight) - product.weight).toFixed(2)
+      item.weight = item.weight - product.weight
+      if (item.weight === 0) {
+        cart.splice(existsIndex, 1)
+      }
     }
   }
 }
 const subTotal = computed(() => {
   return parseFloat(
     cart.reduce((total, item) => {
-      return total + item.product.price * parseFloat(item.weight)
+      return parseFloat((total + item.product.price * item.weight).toFixed(2))
     }, 0)
-  ).toFixed(2)
+  )
 })
 const pricePerProduct = computed(() => {
   return (product) => {
     const cartItem = cart.find((item) => item.product.id === product.id)
     if (cartItem) {
-      return (cartItem.product.price * cartItem.weight).toFixed(2)
+      return parseFloat((cartItem.product.price * cartItem.weight).toFixed(2))
     } else {
       return 0
     }
@@ -48,7 +51,7 @@ const getProductTotalWeight = computed(() => {
   return (product) => {
     const cartItem = cart.find((item) => item.product.id === product.id)
     if (cartItem) {
-      return cartItem.weight
+      return parseFloat(cartItem.weight.toFixed(2))
     } else {
       return '-'
     }
