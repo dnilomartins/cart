@@ -61,6 +61,7 @@ const getProductTotalWeight = computed(() => {
 const shipping = computed(() => {
   const COST_PER_5KG = 7
   const KG_THRESHOLD = 10
+  const WEIGHT_INCREMENT = 5
   const subtotal = subTotal.value
   const totalWeight = cart.reduce((total, item) => total + item.weight, 0)
 
@@ -71,7 +72,7 @@ const shipping = computed(() => {
     const additionalWeight = totalWeight - KG_THRESHOLD
 
     if (additionalWeight > 0) {
-      const extraCost = Math.ceil(additionalWeight / 5) * COST_PER_5KG
+      const extraCost = Math.ceil(additionalWeight / WEIGHT_INCREMENT) * COST_PER_5KG
       shippingCost += extraCost
     }
 
