@@ -15,6 +15,6 @@ export const products = [
     id: 3,
     name: 'Orange',
     price: 9,
-    weight: 0.3
+    weight: 10
   }
 ]

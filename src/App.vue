@@ -57,13 +57,25 @@ const getProductTotalWeight = computed(() => {
     }
   }
 })
+
 const shipping = computed(() => {
-  if (subTotal.value === 0 || subTotal.value > 400) {
+  const COST_PER_5KG = 7
+  const KG_THRESHOLD = 10
+  const subtotal = subTotal.value
+  const totalWeight = cart.reduce((total, item) => total + item.weight, 0)
+
+  if (subtotal > 400) {
     return 0
-  } else if (subTotal.value > 0 && subTotal.value < 400) {
-    return 1
   } else {
-    return 3
+    let shippingCost = 30
+    const additionalWeight = totalWeight - KG_THRESHOLD
+
+    if (additionalWeight > 0) {
+      const extraCost = Math.ceil(additionalWeight / 5) * COST_PER_5KG
+      shippingCost += extraCost
+    }
+
+    return shippingCost
   }
 })
 </script>
