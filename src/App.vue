@@ -1,8 +1,11 @@
 <script setup>
-import { reactive, computed } from 'vue'
+import { reactive, computed, ref } from 'vue'
 import { products } from './products.js'
+import { coupons } from './coupons.js'
 
 const cart = reactive([])
+const couponCode = ref('')
+const currentCoupon = ref(null)
 
 const addItem = (product) => {
   const exists = cart.some((item) => item.product.id === product.id)
@@ -28,6 +31,13 @@ const removeItem = (product) => {
       if (item.weight === 0) {
         cart.splice(existsIndex, 1)
       }
+    }
+    if (
+      currentCoupon.value &&
+      currentCoupon.value.code === 'FOO' &&
+      subTotal.value >= currentCoupon.value.amount
+    ) {
+      currentCoupon.value = null
     }
   }
 }
@@ -62,6 +72,18 @@ const getProductTotalWeight = computed(() => {
   }
 })
 
+const discount = computed(() => {
+  if (currentCoupon.value === null) return 0
+  if (currentCoupon.value.type === 'percent') {
+    const percentDiscount = parseFloat(currentCoupon.value.amount)
+    const discountAmount = subTotal.value * (percentDiscount / 100)
+    return discountAmount.toFixed(2)
+  } else if (currentCoupon.value.type === 'fixed') {
+    return parseFloat(currentCoupon.value.amount)
+  }
+  return 0
+})
+
 const shipping = computed(() => {
   const COST_PER_5KG = 7
   const KG_THRESHOLD = 10
@@ -69,10 +91,12 @@ const shipping = computed(() => {
   const subtotal = subTotal.value
   const totalWeight = cart.reduce((total, item) => total + item.weight, 0)
 
-  if (cart.length === 0) {
-    return 0
-  }
-  if (subtotal > 400) {
+  console.log({ cart, subtotal, currentCoupon })
+  if (
+    cart.length === 0 ||
+    subtotal > 400 ||
+    (currentCoupon.value?.type === 'free_shipping' && subtotal >= 300.5)
+  ) {
     return 0
   } else {
     let shippingCost = 30
@@ -86,6 +110,39 @@ const shipping = computed(() => {
     return shippingCost
   }
 })
+
+const applyCoupon = () => {
+  if (couponCode.value === '') {
+    alert('Por favor, insira um cupom válido.')
+    return
+  }
+  if (currentCoupon.value) {
+    alert('Já existe um cupom aplicado')
+    return
+  }
+  const coupon = coupons.find((c) => c.code === couponCode.value)
+  if (!coupon) {
+    alert('O cupom inserido não é válido.')
+    return
+  }
+  if (cart.length === 0) {
+    alert('Seu carrinho está vazio')
+    return
+  }
+  if (subTotal.value < coupon.amount && coupon.type === 'fixed') {
+    alert('Subtotal é inferior ao valor de desconto')
+    return
+  }
+  if (coupon.type === 'free_shipping' && subTotal.value > 300.5) {
+    alert('O cupom de frete grátis não pode ser aplicado.')
+    return
+  }
+  currentCoupon.value = coupon
+}
+
+const removeCoupon = () => {
+  currentCoupon.value = null
+}
 </script>
 
 <template>
@@ -104,8 +161,14 @@ const shipping = computed(() => {
       </li>
     </ul>
     <div class="calculations">
+      <div>
+        <input type="text" v-model="couponCode" placeholder="Digite seu cupom" />
+        <button @click="applyCoupon">Aplicar</button>
+        <button @click="removeCoupon">Remover</button>
+      </div>
       <div>Subtotal: R${{ subTotal }}</div>
       <div>Shipping: R${{ shipping }}</div>
+      <div>Desconto: R${{ discount }}</div>
     </div>
   </div>
   {{ cart }}
