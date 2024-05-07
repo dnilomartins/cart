@@ -8,10 +8,9 @@ const couponCodeInput = ref('')
 const currentCoupon = ref(null)
 
 const addItem = (product) => {
-  const exists = cart.value.some((item) => item.product.id === product.id)
+  const exists = cart.value.find((item) => item.product.id === product.id)
   if (exists) {
-    const existingItem = cart.value.find((item) => item.product.id === product.id)
-    existingItem.weight = existingItem.weight + product.weight
+    exists.weight = exists.weight + product.weight
   } else {
     cart.value.push({
       product: { ...product },
