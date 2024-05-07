@@ -24,20 +24,9 @@ const removeItem = (product) => {
   const existsIndex = cart.value.findIndex((item) => item.product.id === product.id)
   if (existsIndex !== -1) {
     const item = cart.value[existsIndex]
-    if (item.weight < product.weight) {
+    if (item.weight < product.weight || item.weight === 0) {
       cart.value.splice(existsIndex, 1)
-    } else {
-      item.weight = item.weight - product.weight
-      if (item.weight === 0) {
-        cart.value.splice(existsIndex, 1)
-      }
-    }
-    if (
-      currentCoupon.value &&
-      currentCoupon.value.code === 'FOO' &&
-      subTotal.value >= currentCoupon.value.amount
-    ) {
-      currentCoupon.value = null
+      return
     }
   }
 }
