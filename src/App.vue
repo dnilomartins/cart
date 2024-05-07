@@ -9,6 +9,7 @@ const currentCoupon = ref(null)
 
 const addItem = (product) => {
   const exists = cart.value.find((item) => item.product.id === product.id)
+
   if (exists) {
     exists.weight = exists.weight + product.weight
     return
@@ -22,11 +23,16 @@ const addItem = (product) => {
 
 const removeItem = (product) => {
   const existsIndex = cart.value.findIndex((item) => item.product.id === product.id)
+
   if (existsIndex !== -1) {
     const item = cart.value[existsIndex]
-    if (item.weight < product.weight || item.weight === 0) {
+
+    if (item.weight >= product.weight) {
+      item.weight -= product.weight
+    }
+
+    if (item.weight === 0) {
       cart.value.splice(existsIndex, 1)
-      return
     }
   }
 }
