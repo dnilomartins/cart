@@ -11,12 +11,13 @@ const addItem = (product) => {
   const exists = cart.value.find((item) => item.product.id === product.id)
   if (exists) {
     exists.weight = exists.weight + product.weight
-  } else {
-    cart.value.push({
-      product: { ...product },
-      weight: product.weight
-    })
+    return
   }
+
+  cart.value.push({
+    product: { ...product },
+    weight: product.weight
+  })
 }
 
 const removeItem = (product) => {
