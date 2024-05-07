@@ -4,7 +4,7 @@ import { products } from './products.js'
 import { coupons } from './coupons.js'
 
 const cart = ref([])
-const couponCode = ref('')
+const couponCodeInput = ref('')
 const currentCoupon = ref(null)
 
 const addItem = (product) => {
@@ -112,7 +112,7 @@ const shipping = computed(() => {
 })
 
 const applyCoupon = () => {
-  if (couponCode.value === '') {
+  if (couponCodeInput.value === '') {
     alert('Por favor, insira um cupom válido.')
     return
   }
@@ -120,7 +120,7 @@ const applyCoupon = () => {
     alert('Já existe um cupom aplicado')
     return
   }
-  const coupon = coupons.find((c) => c.code === couponCode.value)
+  const coupon = coupons.find((c) => c.code === couponCodeInput.value)
   if (!coupon) {
     alert('O cupom inserido não é válido.')
     return
@@ -162,7 +162,7 @@ const removeCoupon = () => {
     </ul>
     <div class="calculations">
       <div>
-        <input type="text" v-model="couponCode" placeholder="Digite seu cupom" />
+        <input type="text" v-model="couponCodeInput" placeholder="Digite seu cupom" />
         <button @click="applyCoupon">Aplicar</button>
         <button @click="removeCoupon">Remover</button>
       </div>
