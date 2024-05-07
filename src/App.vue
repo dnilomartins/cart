@@ -1,19 +1,19 @@
 <script setup>
-import { reactive, computed, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { products } from './products.js'
 import { coupons } from './coupons.js'
 
-const cart = reactive([])
+const cart = ref([])
 const couponCode = ref('')
 const currentCoupon = ref(null)
 
 const addItem = (product) => {
-  const exists = cart.some((item) => item.product.id === product.id)
+  const exists = cart.value.some((item) => item.product.id === product.id)
   if (exists) {
-    const existingItem = cart.find((item) => item.product.id === product.id)
+    const existingItem = cart.value.find((item) => item.product.id === product.id)
     existingItem.weight = existingItem.weight + product.weight
   } else {
-    cart.push({
+    cart.value.push({
       product: { ...product },
       weight: product.weight
     })
@@ -21,15 +21,15 @@ const addItem = (product) => {
 }
 
 const removeItem = (product) => {
-  const existsIndex = cart.findIndex((item) => item.product.id === product.id)
+  const existsIndex = cart.value.findIndex((item) => item.product.id === product.id)
   if (existsIndex !== -1) {
-    const item = cart[existsIndex]
+    const item = cart.value[existsIndex]
     if (item.weight < product.weight) {
-      cart.splice(existsIndex, 1)
+      cart.value.splice(existsIndex, 1)
     } else {
       item.weight = item.weight - product.weight
       if (item.weight === 0) {
-        cart.splice(existsIndex, 1)
+        cart.value.splice(existsIndex, 1)
       }
     }
     if (
@@ -44,7 +44,7 @@ const removeItem = (product) => {
 
 const subTotal = computed(() => {
   return parseFloat(
-    cart.reduce((total, item) => {
+    cart.value.reduce((total, item) => {
       return parseFloat((total + item.product.price * item.weight).toFixed(2))
     }, 0)
   )
@@ -52,7 +52,7 @@ const subTotal = computed(() => {
 
 const pricePerProduct = computed(() => {
   return (product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id)
+    const cartItem = cart.value.find((item) => item.product.id === product.id)
     if (cartItem) {
       return parseFloat((cartItem.product.price * cartItem.weight).toFixed(2))
     } else {
@@ -63,7 +63,7 @@ const pricePerProduct = computed(() => {
 
 const getProductTotalWeight = computed(() => {
   return (product) => {
-    const cartItem = cart.find((item) => item.product.id === product.id)
+    const cartItem = cart.value.find((item) => item.product.id === product.id)
     if (cartItem) {
       return parseFloat(cartItem.weight.toFixed(2))
     } else {
@@ -89,11 +89,11 @@ const shipping = computed(() => {
   const KG_THRESHOLD = 10
   const WEIGHT_INCREMENT = 5
   const subtotal = subTotal.value
-  const totalWeight = cart.reduce((total, item) => total + item.weight, 0)
+  const totalWeight = cart.value.reduce((total, item) => total + item.weight, 0)
 
   console.log({ cart, subtotal, currentCoupon })
   if (
-    cart.length === 0 ||
+    cart.value.length === 0 ||
     subtotal > 400 ||
     (currentCoupon.value?.type === 'free_shipping' && subtotal >= 300.5)
   ) {
@@ -125,7 +125,7 @@ const applyCoupon = () => {
     alert('O cupom inserido não é válido.')
     return
   }
-  if (cart.length === 0) {
+  if (cart.value.length === 0) {
     alert('Seu carrinho está vazio')
     return
   }
