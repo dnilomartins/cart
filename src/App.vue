@@ -48,11 +48,10 @@ const subTotal = computed(() => {
 const pricePerProduct = computed(() => {
   return (product) => {
     const cartItem = cart.value.find((item) => item.product.id === product.id)
-    if (cartItem) {
-      return parseFloat((cartItem.product.price * cartItem.weight).toFixed(2))
-    } else {
-      return 0
+    if (cartItem && cartItem.weight > 0) {
+      return cartItem.product.price * cartItem.weight
     }
+    return null
   }
 })
 
@@ -151,7 +150,10 @@ const removeCoupon = () => {
         </div>
         <div class="info-product">
           <div>{{ getProductTotalWeight(product) }}</div>
-          <div>R${{ pricePerProduct(product) }}</div>
+          <div v-if="pricePerProduct(product) !== null">
+            R${{ pricePerProduct(product).toFixed(2) }}
+          </div>
+          <div v-else>R$0</div>
         </div>
       </li>
     </ul>
