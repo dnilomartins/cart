@@ -85,21 +85,25 @@ const totalWeight = computed(() => {
   return cart.value.reduce((total, item) => total + item.weight, 0)
 })
 
+const BASE_SHIPPING_COST = 30
+const COST_PER_5KG = 7
+const KG_THRESHOLD = 10
+const WEIGHT_INCREMENT = 5
+const FREE_SHIPPING_THRESHOLD = 400
+const FREE_SHIPPING_SUBTOTAL_THRESHOLD = 300.5
+
 const shipping = computed(() => {
-  const COST_PER_5KG = 7
-  const KG_THRESHOLD = 10
-  const WEIGHT_INCREMENT = 5
   const subtotal = subTotal.value
 
   if (
     cart.value.length === 0 ||
-    subtotal > 400 ||
-    (currentCoupon.value?.type === 'free_shipping' && subtotal >= 300.5)
+    subtotal > FREE_SHIPPING_THRESHOLD ||
+    (currentCoupon.value?.type === 'free_shipping' && subtotal >= FREE_SHIPPING_SUBTOTAL_THRESHOLD)
   ) {
     return 0
   }
 
-  let shippingCost = 30
+  let shippingCost = BASE_SHIPPING_COST
   const additionalWeight = totalWeight.value - KG_THRESHOLD
 
   if (additionalWeight > 0) {
