@@ -51,7 +51,7 @@ const getProductTotalWeight = computed(() => {
     if (cartItem) {
       return cartItem.weight
     }
-    return null
+    return 0
   }
 })
 
@@ -61,19 +61,23 @@ const pricePerProduct = computed(() => {
     if (cartItem && cartItem.weight > 0) {
       return cartItem.product.price * cartItem.weight
     }
-    return null
+    return 0
   }
 })
 
 const discount = computed(() => {
-  if (currentCoupon.value === null) return 0
-  if (currentCoupon.value.type === 'percent') {
-    const percentDiscount = parseFloat(currentCoupon.value.amount)
-    const discountAmount = subTotal.value * (percentDiscount / 100)
-    return discountAmount.toFixed(2)
-  } else if (currentCoupon.value.type === 'fixed') {
-    return parseFloat(currentCoupon.value.amount)
+  if (currentCoupon.value !== null) {
+    if (currentCoupon.value.type === 'percent') {
+      const percentDiscount = currentCoupon.value.amount
+      const discountAmount = subTotal.value * (percentDiscount / 100)
+      return discountAmount
+    }
+
+    if (currentCoupon.value.type === 'fixed') {
+      return currentCoupon.value.amount
+    }
   }
+
   return 0
 })
 
@@ -148,11 +152,11 @@ const removeCoupon = () => {
           <button @click="removeItem(product)">➖</button>
         </div>
         <div class="info-product">
-          <div v-if="getProductTotalWeight(product) !== null">
-            {{ getProductTotalWeight(product).toFixed(2) }}
+          <div v-if="getProductTotalWeight(product) !== 0">
+            {{ getProductTotalWeight(product).toFixed(1) }}
           </div>
           <div v-else>-</div>
-          <div v-if="pricePerProduct(product) !== null">
+          <div v-if="pricePerProduct(product) !== 0">
             R${{ pricePerProduct(product).toFixed(2) }}
           </div>
           <div v-else>R$0</div>
@@ -167,7 +171,11 @@ const removeCoupon = () => {
       </div>
       <div>Subtotal: R${{ subTotal }}</div>
       <div>Shipping: R${{ shipping }}</div>
-      <div>Desconto: R${{ discount }}</div>
+      <div>
+        <div v-if="discount !== 0">Desconto: R${{ discount.toFixed(2) }}</div>
+
+        <div v-else>Desconto: R$0</div>
+      </div>
     </div>
   </div>
   {{ cart }}
