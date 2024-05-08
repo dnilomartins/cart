@@ -118,6 +118,10 @@ const shipping = computed(() => {
   return shippingCost
 })
 
+const total = computed(() => {
+  return subTotal.value + shipping.value - discount.value
+})
+
 const applyCoupon = () => {
   if (couponCodeInput.value === '') {
     alert('Por favor, insira um cupom válido.')
@@ -195,6 +199,7 @@ const removeCoupon = () => {
         <div v-if="currentCoupon && currentCoupon.type === 'free_shipping'">Desconto: -</div>
         <div v-else>Desconto: R${{ discount.toFixed(2) }}</div>
       </div>
+      <div>Total: R${{ total.toFixed(2) }}</div>
     </div>
   </div>
 </template>
