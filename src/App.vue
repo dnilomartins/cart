@@ -111,6 +111,10 @@ const shipping = computed(() => {
     shippingCost += extraCost
   }
 
+  if (currentCoupon.value?.type === 'free_shipping') {
+    return 0
+  }
+
   return shippingCost
 })
 
@@ -119,27 +123,34 @@ const applyCoupon = () => {
     alert('Por favor, insira um cupom válido.')
     return
   }
+
   if (currentCoupon.value) {
     alert('Já existe um cupom aplicado')
     return
   }
+
   const coupon = coupons.find((c) => c.code === couponCodeInput.value)
+
   if (!coupon) {
     alert('O cupom inserido não é válido.')
     return
   }
+
   if (cart.value.length === 0) {
     alert('Seu carrinho está vazio')
     return
   }
+
+  if (coupon.type === 'free_shipping' && subTotal.value < FREE_SHIPPING_SUBTOTAL_THRESHOLD) {
+    alert('Para usar esse cupom seu subtotal deverá ser maior ou igual a R$300,50')
+    return
+  }
+
   if (subTotal.value < coupon.amount && coupon.type === 'fixed') {
     alert('Subtotal é inferior ao valor de desconto')
     return
   }
-  if (coupon.type === 'free_shipping' && subTotal.value > 300.5) {
-    alert('O cupom de frete grátis não pode ser aplicado.')
-    return
-  }
+
   currentCoupon.value = coupon
 }
 
@@ -176,15 +187,16 @@ const removeCoupon = () => {
         <button @click="removeCoupon">Remover</button>
       </div>
       <div>Subtotal: R${{ subTotal }}</div>
-      <div>Shipping: R${{ shipping }}</div>
+      <div v-if="currentCoupon && currentCoupon.type === 'free_shipping'">
+        Shipping: Frete Grátis
+      </div>
+      <div v-else>Shipping: R${{ shipping }}</div>
       <div>
-        <div v-if="discount !== 0">Desconto: R${{ discount.toFixed(2) }}</div>
-
-        <div v-else>Desconto: R$0</div>
+        <div v-if="currentCoupon && currentCoupon.type === 'free_shipping'">Desconto: -</div>
+        <div v-else>Desconto: R${{ discount.toFixed(2) }}</div>
       </div>
     </div>
   </div>
-  {{ cart }}
 </template>
 
 <style scoped>
