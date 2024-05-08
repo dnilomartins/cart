@@ -45,6 +45,16 @@ const subTotal = computed(() => {
   )
 })
 
+const getProductTotalWeight = computed(() => {
+  return (product) => {
+    const cartItem = cart.value.find((item) => item.product.id === product.id)
+    if (cartItem) {
+      return cartItem.weight
+    }
+    return null
+  }
+})
+
 const pricePerProduct = computed(() => {
   return (product) => {
     const cartItem = cart.value.find((item) => item.product.id === product.id)
@@ -52,17 +62,6 @@ const pricePerProduct = computed(() => {
       return cartItem.product.price * cartItem.weight
     }
     return null
-  }
-})
-
-const getProductTotalWeight = computed(() => {
-  return (product) => {
-    const cartItem = cart.value.find((item) => item.product.id === product.id)
-    if (cartItem) {
-      return parseFloat(cartItem.weight.toFixed(2))
-    } else {
-      return '-'
-    }
   }
 })
 
@@ -149,7 +148,10 @@ const removeCoupon = () => {
           <button @click="removeItem(product)">➖</button>
         </div>
         <div class="info-product">
-          <div>{{ getProductTotalWeight(product) }}</div>
+          <div v-if="getProductTotalWeight(product) !== null">
+            {{ getProductTotalWeight(product).toFixed(2) }}
+          </div>
+          <div v-else>-</div>
           <div v-if="pricePerProduct(product) !== null">
             R${{ pricePerProduct(product).toFixed(2) }}
           </div>
