@@ -74,7 +74,8 @@ const pricePerProduct = computed(() => {
 })
 
 const discount = computed(() => {
-  if (currentCoupon.value !== null) return 0
+  if (currentCoupon.value === null) return 0
+
   if (currentCoupon.value.type === 'percent') {
     const percentDiscount = currentCoupon.value.amount
     const discountAmount = subTotal.value * (percentDiscount / 100)
