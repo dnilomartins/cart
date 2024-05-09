@@ -48,11 +48,9 @@ const removeItem = (product) => {
 }
 
 const subTotal = computed(() => {
-  return parseFloat(
-    cart.value.reduce((total, item) => {
-      return parseFloat((total + item.product.price * item.weight).toFixed(2))
-    }, 0)
-  )
+  return cart.value.reduce((total, item) => {
+    return total + item.product.price * item.weight
+  }, 0)
 })
 
 const getProductTotalWeight = computed(() => {
