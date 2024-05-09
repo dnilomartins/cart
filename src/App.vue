@@ -33,6 +33,10 @@ const removeItem = (product) => {
 
     if (item.weight === 0) {
       cart.value.splice(existsIndex, 1)
+
+      if (currentCoupon.value?.code == 'FOO' && subTotal.value < currentCoupon.value.amount) {
+        currentCoupon.value = null
+      }
     }
   }
 }
