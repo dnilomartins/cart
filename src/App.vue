@@ -74,16 +74,15 @@ const pricePerProduct = computed(() => {
 })
 
 const discount = computed(() => {
-  if (currentCoupon.value !== null) {
-    if (currentCoupon.value.type === 'percent') {
-      const percentDiscount = currentCoupon.value.amount
-      const discountAmount = subTotal.value * (percentDiscount / 100)
-      return discountAmount
-    }
+  if (currentCoupon.value !== null) return 0
+  if (currentCoupon.value.type === 'percent') {
+    const percentDiscount = currentCoupon.value.amount
+    const discountAmount = subTotal.value * (percentDiscount / 100)
+    return discountAmount
+  }
 
-    if (currentCoupon.value.type === 'fixed') {
-      return currentCoupon.value.amount
-    }
+  if (currentCoupon.value.type === 'fixed') {
+    return currentCoupon.value.amount
   }
 
   return 0
