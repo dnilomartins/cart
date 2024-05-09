@@ -48,11 +48,9 @@ const removeItem = (product) => {
 }
 
 const subTotal = computed(() => {
-  return parseFloat(
-    cart.value.reduce((total, item) => {
-      return parseFloat((total + item.product.price * item.weight).toFixed(2))
-    }, 0)
-  )
+  return cart.value.reduce((total, item) => {
+    return total + item.product.price * item.weight
+  }, 0)
 })
 
 const getProductTotalWeight = computed(() => {
@@ -200,7 +198,7 @@ const removeCoupon = () => {
         <button @click="applyCoupon">Aplicar</button>
         <button @click="removeCoupon">Remover</button>
       </div>
-      <div>Subtotal: R${{ subTotal }}</div>
+      <div>Subtotal: R${{ subTotal.toFixed(2) }}</div>
       <div v-if="currentCoupon && currentCoupon.type === 'free_shipping'">
         Shipping: Frete Grátis
       </div>
