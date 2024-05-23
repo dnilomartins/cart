@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { products } from './products.js'
 import { coupons } from './coupons.js'
+import CartProductRow from './CartProductRow.vue'
 
 const cart = ref([])
 const couponCodeInput = ref('')
@@ -51,26 +52,6 @@ const subTotal = computed(() => {
   return cart.value.reduce((total, item) => {
     return total + item.product.price * item.weight
   }, 0)
-})
-
-const getProductTotalWeight = computed(() => {
-  return (product) => {
-    const cartItem = cart.value.find((item) => item.product.id === product.id)
-    if (cartItem) {
-      return cartItem.weight
-    }
-    return 0
-  }
-})
-
-const pricePerProduct = computed(() => {
-  return (product) => {
-    const cartItem = cart.value.find((item) => item.product.id === product.id)
-    if (cartItem && cartItem.weight > 0) {
-      return cartItem.product.price * cartItem.weight
-    }
-    return 0
-  }
 })
 
 const discount = computed(() => {
@@ -174,23 +155,14 @@ const removeCoupon = () => {
 <template>
   <div class="container-item">
     <ul>
-      <li v-for="product in products" :key="product.id">
-        <div>{{ product.name }}</div>
-        <div>
-          <button @click="addItem(product)">➕</button>
-          <button @click="removeItem(product)">➖</button>
-        </div>
-        <div class="info-product">
-          <div v-if="getProductTotalWeight(product) !== 0">
-            {{ getProductTotalWeight(product).toFixed(1) }}
-          </div>
-          <div v-else>-</div>
-          <div v-if="pricePerProduct(product) !== 0">
-            R${{ pricePerProduct(product).toFixed(2) }}
-          </div>
-          <div v-else>R$0</div>
-        </div>
-      </li>
+      <CartProductRow
+        v-for="product in products"
+        :key="product.id"
+        :cart="cart"
+        :product="product"
+        @add="addItem(product)"
+        @remove="removeItem(product)"
+      />
     </ul>
     <div class="calculations">
       <div>
