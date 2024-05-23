@@ -201,23 +201,4 @@ body {
   grid-template-columns: repeat(1, 1fr);
   align-items: center;
 }
-
-ul {
-  list-style: none;
-}
-
-li {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  align-items: center;
-}
-
-.info-product {
-  display: flex;
-  gap: 8px;
-}
-
-.calculations {
-  padding: 12px;
-}
 </style>
