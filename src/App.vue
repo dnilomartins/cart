@@ -9,10 +9,10 @@ const couponCodeInput = ref('')
 const currentCoupon = ref(null)
 
 const addItem = (product) => {
-  const exists = cart.value.find((item) => item.product.id === product.id)
+  const cartItem = cart.value.find((item) => item.product.id === product.id)
 
-  if (exists) {
-    exists.weight = exists.weight + product.weight
+  if (cartItem) {
+    cartItem.weight = cartItem.weight + product.weight
     return
   }
 
@@ -23,13 +23,13 @@ const addItem = (product) => {
 }
 
 const removeItem = (product) => {
-  const existsIndex = cart.value.findIndex((item) => item.product.id === product.id)
+  const cartItem = cart.value.findIndex((item) => item.product.id === product.id)
 
-  if (existsIndex === -1) {
+  if (cartItem === -1) {
     return
   }
 
-  const item = cart.value[existsIndex]
+  const item = cart.value[cartItem]
 
   if (item.weight < product.weight) {
     return
@@ -45,7 +45,7 @@ const removeItem = (product) => {
     return
   }
 
-  cart.value.splice(existsIndex, 1)
+  cart.value.splice(cartItem, 1)
 }
 
 const subTotal = computed(() => {
@@ -171,12 +171,10 @@ const removeCoupon = () => {
         <button @click="removeCoupon">Remover</button>
       </div>
       <div>Subtotal: R${{ subTotal.toFixed(2) }}</div>
-      <div v-if="currentCoupon && currentCoupon.type === 'free_shipping'">
-        Shipping: Frete Grátis
-      </div>
+      <div v-if="currentCoupon?.type === 'free_shipping'">Shipping: Frete Grátis</div>
       <div v-else>Shipping: R${{ shipping }}</div>
       <div>
-        <div v-if="currentCoupon && currentCoupon.type === 'free_shipping'">Desconto: -</div>
+        <div v-if="currentCoupon?.type === 'free_shipping'">Desconto: -</div>
         <div v-else>Desconto: R${{ discount.toFixed(2) }}</div>
       </div>
       <div>Total: R${{ total.toFixed(2) }}</div>
