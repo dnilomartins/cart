@@ -19,13 +19,13 @@ const productTotalWeight = computed(() => {
 
 const pricePerProduct = computed(() => {
   const cartItem = props.cart.find((item) => item.product.id === props.product.id)
-  return cartItem && cartItem.weight > 0 ? cartItem.product.price * cartItem.weight : 0
+  return cartItem ? cartItem.product.price * cartItem.weight : 0
 })
 </script>
 
 <template>
   <li class="product-row">
-    <div>{{ props.product.name }}</div>
+    <div>{{ product.name }}</div>
     <div>
       <button @click="$emit('add')">➕</button>
       <button @click="$emit('remove')">➖</button>
