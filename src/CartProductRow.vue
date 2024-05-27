@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps } from 'vue'
+import { defineProps, computed } from 'vue'
 
 const props = defineProps({
   cart: {
@@ -12,21 +12,15 @@ const props = defineProps({
   }
 })
 
-const getProductTotalWeight = (product) => {
-  const cartItem = props.cart.find((item) => item.product.id === product.id)
-  if (cartItem) {
-    return cartItem.weight
-  }
-  return 0
-}
+const productTotalWeight = computed(() => {
+  const cartItem = props.cart.find((item) => item.product.id === props.product.id)
+  return cartItem ? cartItem.weight : 0
+})
 
-const GetPricePerProduct = (product) => {
-  const cartItem = props.cart.find((item) => item.product.id === product.id)
-  if (cartItem && cartItem.weight > 0) {
-    return cartItem.product.price * cartItem.weight
-  }
-  return 0
-}
+const pricePerProduct = computed(() => {
+  const cartItem = props.cart.find((item) => item.product.id === props.product.id)
+  return cartItem && cartItem.weight > 0 ? cartItem.product.price * cartItem.weight : 0
+})
 </script>
 
 <template>
@@ -37,10 +31,8 @@ const GetPricePerProduct = (product) => {
       <button @click="$emit('remove')">➖</button>
     </div>
     <div class="info-product">
-      <div>
-        {{ getProductTotalWeight(props.product).toFixed(1) }}
-      </div>
-      <div>R${{ GetPricePerProduct(props.product).toFixed(2) }}</div>
+      <div>{{ productTotalWeight.toFixed(1) }}</div>
+      <div>R${{ pricePerProduct.toFixed(2) }}</div>
     </div>
   </li>
 </template>
